@@ -86,6 +86,88 @@ Copy the `custom_components/solaredge_ev_charger` folder into your HA `custom_co
 
 ---
 
+## Lovelace Dashboard Card
+
+A ready-to-use card showing status, live power, session data, solar usage, and conditional start/stop controls.
+
+Go to your dashboard → **Edit → Add Card → Manual** and paste:
+
+```yaml
+type: vertical-stack
+cards:
+  - type: glance
+    title: EV Charger
+    show_name: true
+    show_icon: true
+    show_state: true
+    entities:
+      - entity: sensor.ev_charger_status
+        name: Status
+      - entity: sensor.ev_charger_power
+        name: Power
+      - entity: sensor.ev_session_energy
+        name: Session
+      - entity: sensor.ev_session_solar_usage
+        name: Solar
+      - entity: binary_sensor.ev_charger_connected
+        name: Connected
+      - entity: binary_sensor.ev_charger_charging
+        name: Charging
+
+  - type: entities
+    entities:
+      - entity: sensor.ev_charger_mode
+        name: Mode
+      - entity: sensor.ev_connection_status
+        name: Connection
+      - entity: sensor.ev_session_duration
+        name: Session Duration
+      - entity: sensor.ev_session_distance
+        name: Distance (km)
+      - entity: sensor.ev_excess_solar_status
+        name: Excess Solar
+      - entity: sensor.ev_next_scheduled_charge
+        name: Next Scheduled Charge
+      - entity: binary_sensor.ev_charge_schedule_enabled
+        name: Schedule Enabled
+      - entity: binary_sensor.ev_excess_solar_enabled
+        name: Excess Solar Enabled
+
+  - type: conditional
+    conditions:
+      - entity: binary_sensor.ev_charger_connected
+        state: "on"
+      - entity: binary_sensor.ev_charger_charging
+        state: "off"
+    card:
+      type: button
+      name: Start Charging
+      icon: mdi:play-circle
+      tap_action:
+        action: call-service
+        service: button.press
+        target:
+          entity_id: button.ev_charger_start_charging
+
+  - type: conditional
+    conditions:
+      - entity: binary_sensor.ev_charger_charging
+        state: "on"
+    card:
+      type: button
+      name: Stop Charging
+      icon: mdi:stop-circle
+      tap_action:
+        action: call-service
+        service: button.press
+        target:
+          entity_id: button.ev_charger_stop_charging
+```
+
+> **Note:** Entity IDs above assume your charger's HA name matches the defaults. If they differ, go to **Settings → Devices & Services → SolarEdge EV Charger** and copy the actual entity IDs from there.
+
+---
+
 ## Troubleshooting
 
 Enable debug logging to trace the authentication flow:
