@@ -1,0 +1,13 @@
+{
+  "domain": "solaredge_ev_charger",
+  "name": "SolarEdge EV Charger",
+  "codeowners": ["@mvillarejo"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/mvillarejo/solaredge-evcharger-ha#readme",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/mvillarejo/solaredge-evcharger-ha/issues",
+  "requirements": [],
+  "version": "2.0.0"
+}
