@@ -95,73 +95,117 @@ Go to your dashboard → **Edit → Add Card → Manual** and paste:
 ```yaml
 type: vertical-stack
 cards:
+  # ── Status header ──────────────────────────────────────────────
   - type: glance
-    title: EV Charger
+    title: ⚡ EV Charger
     show_name: true
     show_icon: true
     show_state: true
+    columns: 3
     entities:
-      - entity: sensor.ev_charger_status
+      - entity: sensor.solaredge_ev_charger_ev_charger_status
         name: Status
-      - entity: sensor.ev_charger_power
-        name: Power
-      - entity: sensor.ev_session_energy
-        name: Session
-      - entity: sensor.ev_session_solar_usage
-        name: Solar
-      - entity: binary_sensor.ev_charger_connected
+        icon: mdi:ev-station
+      - entity: binary_sensor.solaredge_ev_charger_ev_charger_connected
         name: Connected
-      - entity: binary_sensor.ev_charger_charging
+        icon: mdi:ev-plug-type2
+      - entity: binary_sensor.solaredge_ev_charger_ev_charger_charging
         name: Charging
+        icon: mdi:lightning-bolt
 
-  - type: entities
+  # ── Start / Stop buttons (shown only when relevant) ───────────
+  - type: horizontal-stack
+    cards:
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.solaredge_ev_charger_ev_charger_connected
+            state: "on"
+          - entity: binary_sensor.solaredge_ev_charger_ev_charger_charging
+            state: "off"
+        card:
+          type: button
+          name: Start Charging
+          icon: mdi:play-circle
+          show_name: true
+          tap_action:
+            action: call-service
+            service: button.press
+            target:
+              entity_id: button.solaredge_ev_charger_ev_charger_start_charging
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.solaredge_ev_charger_ev_charger_charging
+            state: "on"
+        card:
+          type: button
+          name: Stop Charging
+          icon: mdi:stop-circle
+          show_name: true
+          tap_action:
+            action: call-service
+            service: button.press
+            target:
+              entity_id: button.solaredge_ev_charger_ev_charger_stop_charging
+
+  # ── Live power gauge ───────────────────────────────────────────
+  - type: gauge
+    entity: sensor.solaredge_ev_charger_ev_charger_power
+    name: Charging Power
+    min: 0
+    max: 8
+    severity:
+      red: 0
+      yellow: 1
+      green: 5
+
+  # ── Session stats ──────────────────────────────────────────────
+  - type: glance
+    show_name: true
+    show_icon: true
+    show_state: true
+    columns: 3
     entities:
-      - entity: sensor.ev_charger_mode
+      - entity: sensor.solaredge_ev_charger_ev_session_energy
+        name: Session (kWh)
+        icon: mdi:battery-charging
+      - entity: sensor.solaredge_ev_charger_ev_session_solar_usage
+        name: Solar Used
+        icon: mdi:solar-power
+      - entity: sensor.solaredge_ev_charger_ev_session_duration
+        name: Duration
+        icon: mdi:timer
+      - entity: sensor.solaredge_ev_charger_ev_session_distance
+        name: Range Added
+        icon: mdi:map-marker-distance
+      - entity: sensor.solaredge_ev_charger_ev_charger_mode
         name: Mode
-      - entity: sensor.ev_connection_status
-        name: Connection
-      - entity: sensor.ev_session_duration
-        name: Session Duration
-      - entity: sensor.ev_session_distance
-        name: Distance (km)
-      - entity: sensor.ev_excess_solar_status
+        icon: mdi:cog
+      - entity: sensor.solaredge_ev_charger_ev_excess_solar_status
         name: Excess Solar
-      - entity: sensor.ev_next_scheduled_charge
+        icon: mdi:solar-power-variant-outline
+
+  # ── Power history chart ────────────────────────────────────────
+  - type: history-graph
+    title: Power (last 4h)
+    hours_to_show: 4
+    entities:
+      - entity: sensor.solaredge_ev_charger_ev_charger_power
+        name: Power
+
+  # ── Schedule & settings ────────────────────────────────────────
+  - type: entities
+    title: Schedule & Settings
+    show_header_toggle: false
+    entities:
+      - entity: sensor.solaredge_ev_charger_ev_next_scheduled_charge
         name: Next Scheduled Charge
-      - entity: binary_sensor.ev_charge_schedule_enabled
+        icon: mdi:calendar-clock
+      - entity: binary_sensor.solaredge_ev_charger_ev_charge_schedule_enabled
         name: Schedule Enabled
-      - entity: binary_sensor.ev_excess_solar_enabled
+        icon: mdi:clock-outline
+      - entity: binary_sensor.solaredge_ev_charger_ev_excess_solar_enabled
         name: Excess Solar Enabled
-
-  - type: conditional
-    conditions:
-      - entity: binary_sensor.ev_charger_connected
-        state: "on"
-      - entity: binary_sensor.ev_charger_charging
-        state: "off"
-    card:
-      type: button
-      name: Start Charging
-      icon: mdi:play-circle
-      tap_action:
-        action: call-service
-        service: button.press
-        target:
-          entity_id: button.ev_charger_start_charging
-
-  - type: conditional
-    conditions:
-      - entity: binary_sensor.ev_charger_charging
-        state: "on"
-    card:
-      type: button
-      name: Stop Charging
-      icon: mdi:stop-circle
-      tap_action:
-        action: call-service
-        service: button.press
-        target:
-          entity_id: button.ev_charger_stop_charging
+        icon: mdi:solar-panel
 ```
 
 > **Note:** Entity IDs above assume your charger's HA name matches the defaults. If they differ, go to **Settings → Devices & Services → SolarEdge EV Charger** and copy the actual entity IDs from there.
