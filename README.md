@@ -1,6 +1,9 @@
 # SolarEdge EV Charger — Home Assistant Integration
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![Home Assistant Compatible](https://img.shields.io/badge/Home%20Assistant-Compatible-blue.svg)](https://www.home-assistant.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![GitHub Release](https://img.shields.io/github/release/mvillarejo/solaredge-evcharger-ha.svg)](https://github.com/mvillarejo/solaredge-evcharger-ha/releases)
 
 Home Assistant custom integration for monitoring and controlling **SolarEdge EV Chargers** via the SolarEdge ONE monitoring portal (`monitoring.solaredge.com`).
 
